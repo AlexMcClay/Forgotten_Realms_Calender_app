@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Forgotten Realms Calendar App
 
-## Getting Started
+A modern Next.js implementation of the classic Wizards of the Coast Forgotten Realms Calendar tool from 2005.
 
-First, run the development server:
+## Features
+
+- Full calendar system for the Forgotten Realms setting
+- Accurate moon phase calculations for Selûne
+- Support for leap years and special days
+- Historical and personal notes
+- Modern, responsive interface built with Next.js and Tailwind CSS
+
+## Documentation
+
+- [Moon Phases Guide](./docs/MOON_PHASES.md) - Detailed explanation of moon phases with images
+- [Original WotC Calendar](https://github.com/your-username/new_calendar_app/blob/main/original/index.htm) - Reference to the original 2005 calendar tool
+
+## Technical Details
+
+### Stack
+
+- Next.js with TypeScript
+- Tailwind CSS for styling
+- Jest for testing
+
+### Key Components
+
+- `calendarUtils.ts` - Core calendar calculations and moon phase logic
+- `MoonPhaseDisplay.tsx` - Moon phase visualization component
+- `CalendarGrid.tsx` - Main calendar display
+- `CalendarControls.tsx` - Navigation and control interface
+
+### Moon Phase System
+
+The calendar uses a sophisticated moon phase system that accurately tracks the phases of Selûne throughout the year. See the [Moon Phases Guide](./docs/MOON_PHASES.md) for detailed information about:
+
+- How moon phases are calculated
+- What each phase number means
+- How phases are displayed
+- The relationship between phase numbers and visual representations
+
+## Development
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Run development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Run tests:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm test
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Credits
 
-## Learn More
+Original 2005 Calendar Tool © Wizards of the Coast, Inc., a subsidiary of Hasbro, Inc.
+Modern implementation by [Your Name]
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is a fan-made tool and is not affiliated with or endorsed by Wizards of the Coast.
+All Forgotten Realms content and materials are © Wizards of the Coast.
