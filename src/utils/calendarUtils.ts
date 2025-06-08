@@ -3,7 +3,10 @@
  */
 
 interface MonthPhases {
-  [day: number]: number;
+  fullMoonDays: number[]; // Days with phase 1
+  lastQuarterDays: number[]; // Days with phase 5
+  newMoonDays: number[]; // Days with phase 9
+  firstQuarterDays: number[]; // Days with phase 13
 }
 
 interface YearPhases {
@@ -14,1619 +17,362 @@ interface MoonPhaseData {
   [year: number]: YearPhases;
 }
 
+// Moon phase ranges and their corresponding image numbers
+const MOON_PHASES = {
+  FULL_MOON: 1,
+  WANING_GIBBOUS: { start: 2, end: 4 },
+  LAST_QUARTER: 5,
+  WANING_CRESCENT: { start: 6, end: 8 },
+  NEW_MOON: 9,
+  WAXING_CRESCENT: { start: 10, end: 12 },
+  FIRST_QUARTER: 13,
+  WAXING_GIBBOUS: { start: 14, end: 16 },
+} as const;
+
 // Moon phase data for years 1372-1375 DR
 const moonPhaseData: MoonPhaseData = {
   1372: {
     // Hammer
     1: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 3,
-      7: 4, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14,
-      31: 15, // Waxing gibbous (including Midwinter)
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Alturiak
     2: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 3,
-      7: 4, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [1, 30],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Ches
     3: {
-      1: 14,
-      2: 15,
-      3: 16,
-      4: 14,
-      5: 15,
-      6: 16,
-      7: 14, // Waxing gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Tarsakh
     4: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 3,
-      7: 4, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12,
-      23: 10, // Waxing crescent
-      24: 13, // First quarter
-      25: 14,
-      26: 15,
-      27: 16,
-      28: 14,
-      29: 15,
-      30: 16,
-      31: 15, // Waxing gibbous (including Greengrass)
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [24],
     },
     // Mirtul
     5: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 3,
-      7: 4, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Kythorn
     6: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 3,
-      7: 4, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12,
-      23: 10, // Waxing crescent
-      24: 13, // First quarter
-      25: 14,
-      26: 15,
-      27: 16,
-      28: 14,
-      29: 15,
-      30: 16, // Waxing gibbous
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [24],
     },
     // Flamerule
     7: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 3,
-      7: 4,
-      8: 4, // Waning gibbous
-      9: 5, // Last quarter
-      10: 6,
-      11: 7,
-      12: 8,
-      13: 6,
-      14: 7,
-      15: 8, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12,
-      23: 10, // Waxing crescent
-      24: 13, // First quarter
-      25: 14,
-      26: 15,
-      27: 16,
-      28: 14,
-      29: 15,
-      30: 16,
-      31: 15,
-      32: 16, // Waxing gibbous (including Midsummer and Shieldmeet)
+      fullMoonDays: [1],
+      lastQuarterDays: [9],
+      newMoonDays: [16],
+      firstQuarterDays: [24],
     },
     // Eleasis
     8: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 3, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12, // Waxing crescent
-      22: 13, // First quarter
-      23: 14,
-      24: 15,
-      25: 16,
-      26: 14,
-      27: 15,
-      28: 16,
-      29: 14,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [1, 30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [22],
     },
     // Eleint
     9: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1,
-      31: 2, // Waxing gibbous + Full moon + Highharvestide
+      fullMoonDays: [30],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Marpenoth
     10: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12, // Waxing crescent
-      22: 13, // First quarter
-      23: 14,
-      24: 15,
-      25: 16,
-      26: 14,
-      27: 15,
-      28: 16,
-      29: 14,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [22],
     },
     // Uktar
     11: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1,
-      31: 2, // Waxing gibbous + Full moon + Feast of the Moon
+      fullMoonDays: [30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Nightal
     12: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12, // Waxing crescent
-      22: 13, // First quarter
-      23: 14,
-      24: 15,
-      25: 16,
-      26: 14,
-      27: 15,
-      28: 16,
-      29: 14,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [22],
     },
   },
   1373: {
     // Hammer
     1: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1,
-      31: 2, // Waxing gibbous + Full moon + Midwinter
+      fullMoonDays: [30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Alturiak
     2: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8, // Waning crescent
-      14: 9, // New moon
-      15: 10,
-      16: 11,
-      17: 12,
-      18: 10,
-      19: 11,
-      20: 12,
-      21: 10, // Waxing crescent
-      22: 13, // First quarter
-      23: 14,
-      24: 15,
-      25: 16,
-      26: 14,
-      27: 15,
-      28: 16,
-      29: 14,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [30],
+      lastQuarterDays: [7],
+      newMoonDays: [14],
+      firstQuarterDays: [22],
     },
     // Ches
     3: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12, // Waxing crescent
-      22: 13, // First quarter
-      23: 14,
-      24: 15,
-      25: 16,
-      26: 14,
-      27: 15,
-      28: 16,
-      29: 14,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [22],
     },
     // Tarsakh
     4: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 10,
-      18: 11,
-      19: 11,
-      20: 12,
-      21: 12,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 14,
-      26: 14,
-      27: 15,
-      28: 15,
-      29: 16,
-      30: 16, // Waxing gibbous
-      31: 16, // Waxing gibbous
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Mirtul
     5: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12, // Waxing crescent
-      22: 13, // First quarter
-      23: 14,
-      24: 15,
-      25: 16,
-      26: 14,
-      27: 15,
-      28: 16,
-      29: 14,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [1, 30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [22],
     },
     // Kythorn
     6: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Flamerule
     7: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14,
-      31: 15, // Waxing gibbous + Midsummer
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Eleasis
     8: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [1, 30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [22],
     },
     // Eleint
     9: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14,
-      31: 15, // Waxing gibbous + Highharvestide
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Marpenoth
     10: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [1, 30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Uktar
     11: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14,
-      31: 15, // Waxing gibbous + Feast of the Moon
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Nightal
     12: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12, // Waxing crescent
-      22: 13, // First quarter
-      23: 14,
-      24: 15,
-      25: 16,
-      26: 14,
-      27: 15,
-      28: 16,
-      29: 14,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [1, 30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [22],
     },
   },
   1374: {
     // Hammer
     1: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1,
-      31: 2, // Waxing gibbous + Full moon + Midwinter
+      fullMoonDays: [30],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Alturiak
     2: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12, // Waxing crescent
-      22: 13, // First quarter
-      23: 14,
-      24: 15,
-      25: 16,
-      26: 14,
-      27: 15,
-      28: 16,
-      29: 14,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [22],
     },
     // Ches
     3: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Tarsakh
     4: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14,
-      31: 15, // Waxing gibbous + Greengrass
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Mirtul
     5: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [1, 30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Kythorn
     6: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Flamerule
     7: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14,
-      31: 15, // Waxing gibbous + Midsummer
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Eleasis
     8: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Eleint
     9: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
-      31: 16, // Waxing gibbous + Highharvestide
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Marpenoth
     10: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Uktar
     11: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
-      31: 16, // Waxing gibbous
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Nightal
     12: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [1, 30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
   },
   1375: {
     // Hammer
     1: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14,
-      31: 15, // Waxing gibbous + Midwinter
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Alturiak
     2: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4, // Waning gibbous
-      7: 5, // Last quarter
-      8: 6,
-      9: 7,
-      10: 8,
-      11: 6,
-      12: 7,
-      13: 8,
-      14: 6, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [1, 30],
+      lastQuarterDays: [7],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Ches
     3: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Tarsakh
     4: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14,
-      31: 15, // Waxing gibbous + Greengrass
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Mirtul
     5: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 1, // Waxing gibbous + Full moon
+      fullMoonDays: [1, 30],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Kythorn
     6: {
-      1: 2,
-      2: 3,
-      3: 4,
-      4: 2,
-      5: 3,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
+      fullMoonDays: [],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Flamerule
     7: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12,
-      23: 10, // Waxing crescent
-      24: 13, // First quarter
-      25: 14,
-      26: 15,
-      27: 16,
-      28: 14,
-      29: 15,
-      30: 16,
-      31: 15, // Waxing gibbous + Midsummer
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [24],
     },
     // Eleasis
     8: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Eleint
     9: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12,
-      23: 10, // Waxing crescent
-      24: 13, // First quarter
-      25: 14,
-      26: 15,
-      27: 16,
-      28: 14,
-      29: 15,
-      30: 16,
-      31: 15, // Waxing gibbous + Highharvestide
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [24],
     },
     // Marpenoth
     10: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
     // Uktar
     11: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8,
-      15: 6, // Waning crescent
-      16: 9, // New moon
-      17: 10,
-      18: 11,
-      19: 12,
-      20: 10,
-      21: 11,
-      22: 12, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14,
-      31: 15, // Waxing gibbous + Feast of the Moon
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [16],
+      firstQuarterDays: [23],
     },
     // Nightal
     12: {
-      1: 1, // Full moon
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 2,
-      6: 4,
-      7: 2, // Waning gibbous
-      8: 5, // Last quarter
-      9: 6,
-      10: 7,
-      11: 8,
-      12: 6,
-      13: 7,
-      14: 8, // Waning crescent
-      15: 9, // New moon
-      16: 10,
-      17: 11,
-      18: 12,
-      19: 10,
-      20: 11,
-      21: 12,
-      22: 10, // Waxing crescent
-      23: 13, // First quarter
-      24: 14,
-      25: 15,
-      26: 16,
-      27: 14,
-      28: 15,
-      29: 16,
-      30: 14, // Waxing gibbous
+      fullMoonDays: [1],
+      lastQuarterDays: [8],
+      newMoonDays: [15],
+      firstQuarterDays: [23],
     },
   },
 };
@@ -1648,10 +394,128 @@ export function getMoonPhase(
     // For years we don't have data for, fall back to the next cycle
     // (every 4 years the pattern repeats)
     const cycleYear = year - Math.floor((year - 1372) / 4) * 4;
-    return moonPhaseData[cycleYear]?.[month]?.[day];
+    return getMoonPhase(cycleYear, month, day);
   }
 
-  return moonPhaseData[year]?.[month]?.[day];
+  const monthData = moonPhaseData[year][month];
+  if (!monthData) return undefined;
+
+  // Check for full moon
+  if (monthData.fullMoonDays.includes(day)) {
+    return MOON_PHASES.FULL_MOON;
+  }
+
+  // Check for last quarter
+  if (monthData.lastQuarterDays.includes(day)) {
+    return MOON_PHASES.LAST_QUARTER;
+  }
+
+  // Check for new moon
+  if (monthData.newMoonDays.includes(day)) {
+    return MOON_PHASES.NEW_MOON;
+  }
+
+  // Check for first quarter
+  if (monthData.firstQuarterDays.includes(day)) {
+    return MOON_PHASES.FIRST_QUARTER;
+  }
+
+  // Get all phase transition days in order
+  const transitions = [
+    ...monthData.fullMoonDays.map((d) => ({ day: d, type: "full" })),
+    ...monthData.lastQuarterDays.map((d) => ({ day: d, type: "last" })),
+    ...monthData.newMoonDays.map((d) => ({ day: d, type: "new" })),
+    ...monthData.firstQuarterDays.map((d) => ({ day: d, type: "first" })),
+  ].sort((a, b) => a.day - b.day);
+
+  // Find the phases before and after the given day
+  const prevTransition = transitions.filter((t) => t.day <= day).pop();
+  const nextTransition = transitions.find((t) => t.day > day);
+
+  // If we don't have a previous transition and the month doesn't start with a full moon,
+  // assume we're starting with waning gibbous
+  if (!prevTransition) {
+    if (nextTransition && nextTransition.type === "last") {
+      const daysToNext = nextTransition.day - day;
+      const totalDays = nextTransition.day;
+      const progress = 1 - daysToNext / totalDays;
+      const range =
+        MOON_PHASES.WANING_GIBBOUS.end - MOON_PHASES.WANING_GIBBOUS.start;
+      return Math.round(MOON_PHASES.WANING_GIBBOUS.start + progress * range);
+    }
+    return undefined;
+  }
+
+  // If we don't have a next transition, handle end of month cases
+  if (!nextTransition) {
+    // If the last transition was a first quarter, interpolate waxing gibbous
+    if (prevTransition.type === "first") {
+      const daysFromPrev = day - prevTransition.day;
+      const totalDays = 30 - prevTransition.day; // Assume standard month length
+      const progress = daysFromPrev / totalDays;
+      const range =
+        MOON_PHASES.WAXING_GIBBOUS.end - MOON_PHASES.WAXING_GIBBOUS.start;
+      return Math.min(
+        16, // Clamp to maximum moon phase
+        Math.round(MOON_PHASES.WAXING_GIBBOUS.start + progress * range)
+      );
+    }
+    // If the last transition was a full moon, assume remaining days are waxing gibbous
+    if (prevTransition.type === "full") {
+      return MOON_PHASES.WAXING_GIBBOUS.end; // Return maximum waxing gibbous (16)
+    }
+    return undefined;
+  }
+
+  // Calculate progress between transitions
+  const totalDays = nextTransition.day - prevTransition.day;
+  const daysFromPrev = day - prevTransition.day;
+  const progress = daysFromPrev / totalDays;
+
+  // Helper function to interpolate between phases
+  const interpolatePhase = (start: number, end: number, progress: number) => {
+    const range = end - start;
+    return Math.min(16, Math.round(start + progress * range));
+  };
+
+  // Handle transitions between major phases
+  if (prevTransition.type === "full" && nextTransition.type === "last") {
+    // Waning gibbous
+    return interpolatePhase(
+      MOON_PHASES.WANING_GIBBOUS.start,
+      MOON_PHASES.WANING_GIBBOUS.end,
+      progress
+    );
+  }
+
+  if (prevTransition.type === "last" && nextTransition.type === "new") {
+    // Waning crescent
+    return interpolatePhase(
+      MOON_PHASES.WANING_CRESCENT.start,
+      MOON_PHASES.WANING_CRESCENT.end,
+      progress
+    );
+  }
+
+  if (prevTransition.type === "new" && nextTransition.type === "first") {
+    // Waxing crescent
+    return interpolatePhase(
+      MOON_PHASES.WAXING_CRESCENT.start,
+      MOON_PHASES.WAXING_CRESCENT.end,
+      progress
+    );
+  }
+
+  if (prevTransition.type === "first" && nextTransition.type === "full") {
+    // Waxing gibbous
+    return interpolatePhase(
+      MOON_PHASES.WAXING_GIBBOUS.start,
+      MOON_PHASES.WAXING_GIBBOUS.end,
+      progress
+    );
+  }
+
+  return undefined;
 }
 
 /**
