@@ -42,7 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </header>
 
-      <main className="container mx-auto p-4">{children}</main>
+      <main className=" mx-auto p-4">{children}</main>
 
       <footer className="bg-gray-900 p-4 mt-auto border-t border-gray-800">
         <div className="container mx-auto text-center text-sm">

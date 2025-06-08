@@ -23,12 +23,12 @@ const MONTHS = [
 
 const HOLIDAYS: Holiday[] = [
   { name: "Midwinter", after: "Hammer", day: 31 },
-  { name: "Spring Equinox", after: "Ches", day: 31 },
+  // { name: "Spring Equinox", after: "Ches", day: 31 },
   { name: "Greengrass", after: "Tarsakh", day: 31 },
   { name: "Midsummer", after: "Flamerule", day: 31 },
   { name: "Shieldmeet", after: "Flamerule", day: 32, leapYearOnly: true },
   { name: "Highharvestide", after: "Eleint", day: 31 },
-  { name: "Feast of the Moon", after: "Nightal", day: 31 },
+  { name: "Feast of the Moon", after: "Uktar", day: 31 },
 ];
 
 interface Holiday {
