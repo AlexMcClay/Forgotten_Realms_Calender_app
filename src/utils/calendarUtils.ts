@@ -54,25 +54,28 @@ export function getMoonPhase(year: number, month: number, day: number): number {
   // The original code had these as global arrays, but we're encapsulating them here
 
   // Leap year moon phases (Type 1)
-  const leapYearMoonPhases = [
-    0, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 16, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5,
-    6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 16, 0,
-    0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 10, 11, 12,
-    13, 14, 15, 16, 16, 16, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 8,
-    8, 8, 8, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 16, 0, 0, 0, 0, 0, 1, 2, 3,
-    4, 5, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16,
-    16, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 10,
-    11, 12, 13, 14, 15, 16, 16, 16, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7,
-    7, 8, 8, 8, 8, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 16, 0, 0, 0, 0, 0, 1,
-    2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-    16, 16, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9,
-    10, 11, 12, 13, 14, 15, 16, 16, 16, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7,
-    7, 7, 7, 8, 8, 8, 8, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 16, 0, 0, 0, 0,
-    0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 10, 11, 12, 13, 14,
-    15, 16, 16, 16, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8,
-    8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 16, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6,
-    7, 7, 7, 7, 7, 8, 8, 8, 8,
+  // Each month follows the pattern:
+  // Days 1-7: Full Moon to Last Quarter (phases 8-10)
+  // Days 8-15: Last Quarter to New Moon (phases 11-15)
+  // Days 16-22: New Moon to First Quarter (phases 0-2)
+  // Days 23-30: First Quarter to Full Moon (phases 3-7)
+  const monthPattern = [
+    // Days 1-7: Full Moon to Last Quarter
+    0, 8, 8, 9, 9, 10, 10, 10,
+    // Days 8-15: Last Quarter to New Moon
+    11, 12, 12, 13, 13, 14, 15, 15,
+    // Days 16-22: New Moon to First Quarter
+    0, 0, 1, 1, 2, 2, 3,
+    // Days 23-30: First Quarter to Full Moon
+    3, 4, 5, 5, 6, 6, 7, 7,
+    // Extra days for array indexing (to match original array length)
+    7, 8,
   ];
+
+  // Create the full array by repeating the pattern for each month
+  const leapYearMoonPhases = Array(12)
+    .fill(null)
+    .flatMap(() => monthPattern);
 
   // Non-leap year moon phases (Type 2)
   const nonLeapYearMoonPhases2 = [

@@ -33,6 +33,9 @@ const HomePage: React.FC = () => {
     setSelectedDay(null);
   };
 
+  console.log("Rendering HomePage with year:", year, "and month:", month);
+  console.log("Selected day:", selectedDay);
+
   return (
     <Layout>
       <div className="max-w-6xl mx-auto">

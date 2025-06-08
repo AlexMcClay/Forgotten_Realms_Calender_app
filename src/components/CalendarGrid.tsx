@@ -70,18 +70,27 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
       )}
 
       {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-10 gap-1">
         {/* Day headers */}
-        {["1st", "2nd", "3rd", "4th", "5th", "6th", "7th"].map(
-          (dayHeader, index) => (
-            <div
-              key={`header-${index}`}
-              className="text-center font-semibold p-1"
-            >
-              {dayHeader}
-            </div>
-          )
-        )}
+        {[
+          "1st",
+          "2nd",
+          "3rd",
+          "4th",
+          "5th",
+          "6th",
+          "7th",
+          "8th",
+          "9th",
+          "10th",
+        ].map((dayHeader, index) => (
+          <div
+            key={`header-${index}`}
+            className="text-center font-semibold p-1"
+          >
+            {dayHeader}
+          </div>
+        ))}
 
         {/* Calendar days */}
         {days.map((day) => {

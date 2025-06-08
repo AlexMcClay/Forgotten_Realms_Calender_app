@@ -35,28 +35,55 @@ describe("Calendar Utilities", () => {
   });
 
   describe("getMoonPhase", () => {
-    it("should return the correct moon phase for 1 Hammer 1368 DR", () => {
+    describe("Hammer 1368 DR Moon Phases", () => {
       const year = 1368;
       const month = 1; // Hammer
-      const day = 1;
-      const result = getMoonPhase(year, month, day);
 
-      // The original code indicates this should be a full moon (phase 8)
-      expect(result).toBe(8);
-    });
+      it("should show full moon on day 1", () => {
+        const result = getMoonPhase(year, month, 1);
+        expect(result).toBe(8); // Full moon
+        expect(convertMoonPhaseToIndex(result)).toBe(4); // Full moon index
+      });
 
-    it("should return a new moon for 16 Hammer 1368 DR", () => {
-      const year = 1368;
-      const month = 1; // Hammer
-      const day = 16;
-      const result = getMoonPhase(year, month, day);
+      it("should show last quarter on day 8", () => {
+        const result = getMoonPhase(year, month, 8);
+        expect(result).toBe(11); // Last quarter
+        expect(convertMoonPhaseToIndex(result)).toBe(6); // Last quarter index
+      });
 
-      // Should be phase 0 (new moon)
-      expect(result).toBe(0);
+      it("should show new moon on day 16", () => {
+        const result = getMoonPhase(year, month, 16);
+        expect(result).toBe(0); // New moon
+        expect(convertMoonPhaseToIndex(result)).toBe(0); // New moon index
+      });
 
-      const moonPhaseIndex = convertMoonPhaseToIndex(result);
-      // Should be index 0 (new moon)
-      expect(moonPhaseIndex).toBe(0);
+      it("should show first quarter on day 23", () => {
+        const result = getMoonPhase(year, month, 23);
+        expect(result).toBe(3); // First quarter
+        expect(convertMoonPhaseToIndex(result)).toBe(2); // First quarter index
+      });
+
+      it("should show correct phase progression through the month", () => {
+        // Days 1-7: Full Moon to Last Quarter
+        expect(getMoonPhase(year, month, 1)).toBe(8); // Full moon
+        expect(getMoonPhase(year, month, 4)).toBe(9); // Waning gibbous
+        expect(getMoonPhase(year, month, 7)).toBe(10); // Waning gibbous
+
+        // Days 8-15: Last Quarter to New Moon
+        expect(getMoonPhase(year, month, 8)).toBe(11); // Last quarter
+        expect(getMoonPhase(year, month, 12)).toBe(13); // Waning crescent
+        expect(getMoonPhase(year, month, 15)).toBe(15); // Waning crescent
+
+        // Days 16-22: New Moon to First Quarter
+        expect(getMoonPhase(year, month, 16)).toBe(0); // New moon
+        expect(getMoonPhase(year, month, 19)).toBe(1); // Waxing crescent
+        expect(getMoonPhase(year, month, 22)).toBe(2); // Waxing crescent
+
+        // Days 23-30: First Quarter to Full Moon
+        expect(getMoonPhase(year, month, 23)).toBe(3); // First quarter
+        expect(getMoonPhase(year, month, 26)).toBe(5); // Waxing gibbous
+        expect(getMoonPhase(year, month, 30)).toBe(7); // Almost full
+      });
     });
   });
 
@@ -112,17 +139,17 @@ describe("Calendar Utilities", () => {
       const year = 1368;
       const month = 1; // Hammer
 
-      // Day 8 should be waning crescent (phase 15)
+      // Day 8 should be last quarter (phase 11)
       const day8Phase = getMoonPhase(year, month, 8);
-      expect(day8Phase).toBe(15);
+      expect(day8Phase).toBe(11);
 
-      // Day 24 should be waxing gibbous (phase 7)
+      // Day 24 should be waxing gibbous (phase 5)
       const day24Phase = getMoonPhase(year, month, 24);
-      expect(day24Phase).toBe(7);
+      expect(day24Phase).toBe(5);
 
       // Verify the phase indices
-      expect(convertMoonPhaseToIndex(day8Phase)).toBe(7); // Waning crescent
-      expect(convertMoonPhaseToIndex(day24Phase)).toBe(4); // Full moon
+      expect(convertMoonPhaseToIndex(day8Phase)).toBe(6); // Last quarter
+      expect(convertMoonPhaseToIndex(day24Phase)).toBe(3); // Waxing gibbous
     });
   });
 });
