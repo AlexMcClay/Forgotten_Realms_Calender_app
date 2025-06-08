@@ -1,7 +1,6 @@
 import React from "react";
 import { MONTHS } from "../data/calendarData";
-import { getMoonPhase, convertMoonPhaseToIndex } from "../utils/calendarUtils";
-import { MOON_PHASES } from "../data/calendarData";
+import { getMoonPhase } from "../utils/calendarUtils";
 import MoonPhaseDisplay from "./MoonPhaseDisplay";
 import { getAllNotes } from "../data/notesData";
 import { Note } from "../types/calendar";
@@ -22,9 +21,7 @@ const DayDetail: React.FC<DayDetailProps> = ({ year, month, day, onClose }) => {
   }
 
   // Get the moon phase for the selected day
-  const moonPhaseNumber = getMoonPhase(year, month, day);
-  const moonPhaseIndex = convertMoonPhaseToIndex(moonPhaseNumber);
-  const moonPhase = MOON_PHASES[moonPhaseIndex];
+  const moonPhase = getMoonPhase(year, month, day);
 
   // Get notes for the selected day
   const notes = getAllNotes(year, month, day);
@@ -48,7 +45,9 @@ const DayDetail: React.FC<DayDetailProps> = ({ year, month, day, onClose }) => {
           </div>
 
           <div className="mb-6 flex justify-center">
-            <MoonPhaseDisplay moonPhase={moonPhase} size="large" />
+            <div className="w-24 h-24">
+              <MoonPhaseDisplay phase={moonPhase} useHighRes={true} />
+            </div>
           </div>
 
           <div className="mb-6">

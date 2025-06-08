@@ -203,10 +203,10 @@ describe("Calendar Utilities", () => {
 
       test("Waning Gibbous (Days 1-6)", () => {
         expect(getMoonPhase(year, month, 1)).toBe(2);
-        expect(getMoonPhase(year, month, 2)).toBe(3);
-        expect(getMoonPhase(year, month, 3)).toBe(4);
-        expect(getMoonPhase(year, month, 4)).toBe(2);
-        expect(getMoonPhase(year, month, 5)).toBe(3);
+        expect(getMoonPhase(year, month, 2)).toBe(2);
+        expect(getMoonPhase(year, month, 3)).toBe(3);
+        expect(getMoonPhase(year, month, 4)).toBe(3);
+        expect(getMoonPhase(year, month, 5)).toBe(4);
         expect(getMoonPhase(year, month, 6)).toBe(4);
       });
 

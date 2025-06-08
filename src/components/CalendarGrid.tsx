@@ -108,7 +108,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
 
               {/* Moon phase indicator */}
               <div className="mt-auto flex justify-center">
-                <MoonPhaseDisplay phase={moonPhase} />
+                <MoonPhaseDisplay phase={moonPhase} useHighRes={true} />
               </div>
             </div>
           );
