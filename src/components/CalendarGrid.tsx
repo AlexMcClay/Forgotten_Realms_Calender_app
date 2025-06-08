@@ -1,7 +1,6 @@
 import React from "react";
 import { MONTHS } from "../data/calendarData";
-import { getMoonPhase, convertMoonPhaseToIndex } from "../utils/calendarUtils";
-import { MOON_PHASES } from "../data/calendarData";
+import { getMoonPhase } from "../utils/calendarUtils";
 import MoonPhaseDisplay from "./MoonPhaseDisplay";
 import { getAllNotes } from "../data/notesData";
 
@@ -39,11 +38,9 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
     return notes.length > 0;
   };
 
-  // Function to get the moon phase for a specific day
+  // Function to get the moon phase number for a specific day
   const getMoonPhaseForDay = (day: number) => {
-    const moonPhaseNumber = getMoonPhase(year, month, day);
-    const moonPhaseIndex = convertMoonPhaseToIndex(moonPhaseNumber);
-    return MOON_PHASES[moonPhaseIndex];
+    return getMoonPhase(year, month, day);
   };
 
   // Check if the month has a holiday
@@ -111,7 +108,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
 
               {/* Moon phase indicator */}
               <div className="mt-auto flex justify-center">
-                <MoonPhaseDisplay moonPhase={moonPhase} size="small" />
+                <MoonPhaseDisplay phase={moonPhase} />
               </div>
             </div>
           );
