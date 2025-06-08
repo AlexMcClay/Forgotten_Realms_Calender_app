@@ -128,35 +128,6 @@ export default function YearlyMoonPhases({ year }: YearlyMoonPhasesProps) {
           })}
         </tbody>
       </table>
-      <div className="mt-4 p-4 bg-gray-900 rounded-lg">
-        <h3 className="font-medium mb-2">Moon Phase Legend</h3>
-        <div className="grid grid-cols-4 gap-4">
-          <div className="flex items-center">
-            <div className="w-8 h-8 mr-2">
-              <MoonPhaseDisplay phase={1} />
-            </div>
-            <span>Full Moon</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-8 h-8 mr-2">
-              <MoonPhaseDisplay phase={5} />
-            </div>
-            <span>Last Quarter</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-8 h-8 mr-2">
-              <MoonPhaseDisplay phase={9} />
-            </div>
-            <span>New Moon</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-8 h-8 mr-2">
-              <MoonPhaseDisplay phase={13} />
-            </div>
-            <span>First Quarter</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

@@ -1,11 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import YearlyMoonPhases from "@/components/YearlyMoonPhases";
-import { useState } from "react";
+import MoonPhaseLegend from "@/components/MoonPhaseLegend";
+import MoonPhaseModal from "@/components/MoonPhaseModal";
 
 export default function MoonPhasesPage() {
   const [currentYear, setCurrentYear] = useState(1372); // Default to a specific year in DR
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handlePreviousYear = () => {
     setCurrentYear((prev) => prev - 1);
@@ -13,6 +15,14 @@ export default function MoonPhasesPage() {
 
   const handleNextYear = () => {
     setCurrentYear((prev) => prev + 1);
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -49,7 +59,11 @@ export default function MoonPhasesPage() {
       {/* Moon Phases Grid */}
       <div className="bg-gray-800 p-6 rounded-lg shadow-xl">
         <YearlyMoonPhases year={currentYear} />
+        <MoonPhaseLegend onInfoClick={handleOpenModal} />
       </div>
+
+      {/* Moon Phase Info Modal */}
+      <MoonPhaseModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 }
