@@ -1,8 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
-import { HISTORICAL_NOTES, PERSONAL_NOTES } from "../../data/notesData";
+import {
+  HISTORICAL_NOTES,
+  getPersonalNotes,
+  addPersonalNote,
+  updatePersonalNote,
+  deletePersonalNote,
+  generateNoteId,
+} from "../../data/notesData";
 import { Note } from "../../types/calendar";
 import { MONTHS } from "../../data/calendarData";
 import { formatYear } from "../../data/yearData";
@@ -47,8 +54,66 @@ const NotesPage: React.FC = () => {
     return `${note.day} ${monthName}, ${formatYear(note.year)}`;
   };
 
+  const [personalNotes, setPersonalNotes] = useState<Note[]>([]);
+  const [isEditing, setIsEditing] = useState<string | null>(null);
+  const [newNoteContent, setNewNoteContent] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [selectedYear, setSelectedYear] = useState(1372);
+  const [selectedMonth, setSelectedMonth] = useState(1);
+  const [selectedDay, setSelectedDay] = useState(1);
+
+  // Load personal notes on component mount
+  useEffect(() => {
+    setPersonalNotes(
+      getPersonalNotes(selectedYear, selectedMonth, selectedDay)
+    );
+  }, [selectedYear, selectedMonth, selectedDay]);
+
   // Get the notes based on the active tab
-  const notes = activeTab === "historical" ? HISTORICAL_NOTES : PERSONAL_NOTES;
+  const notes = activeTab === "historical" ? HISTORICAL_NOTES : personalNotes;
+
+  const handleAddNote = () => {
+    if (!newNoteContent.trim()) return;
+
+    const newNote: Note = {
+      id: generateNoteId(false, selectedYear, selectedMonth, selectedDay),
+      year: selectedYear,
+      month: selectedMonth,
+      day: selectedDay,
+      content: newNoteContent,
+    };
+
+    addPersonalNote(newNote);
+    setPersonalNotes(
+      getPersonalNotes(selectedYear, selectedMonth, selectedDay)
+    );
+    setNewNoteContent("");
+  };
+
+  const handleUpdateNote = (noteId: string) => {
+    if (!editContent.trim()) return;
+
+    updatePersonalNote(noteId, editContent);
+    setPersonalNotes(
+      getPersonalNotes(selectedYear, selectedMonth, selectedDay)
+    );
+    setIsEditing(null);
+    setEditContent("");
+  };
+
+  const handleDeleteNote = (noteId: string) => {
+    if (confirm("Are you sure you want to delete this note?")) {
+      deletePersonalNote(noteId);
+      setPersonalNotes(
+        getPersonalNotes(selectedYear, selectedMonth, selectedDay)
+      );
+    }
+  };
+
+  const startEditing = (note: Note) => {
+    setIsEditing(note.id);
+    setEditContent(note.content);
+  };
 
   return (
     <Layout>
@@ -97,33 +162,127 @@ const NotesPage: React.FC = () => {
             {activeTab === "historical" ? "Historical Notes" : "Personal Notes"}
           </h2>
 
-          {notes.length > 0 ? (
-            <div className="space-y-4">
-              {notes.map((note) => (
-                <div key={note.id} className="bg-gray-700 p-4 rounded">
-                  <h3 className="font-semibold text-yellow-300 mb-2">
-                    {formatDate(note)}
-                  </h3>
-                  <div
-                    className="prose prose-invert max-w-none"
-                    dangerouslySetInnerHTML={{ __html: note.content }}
-                  />
-                </div>
-              ))}
+          {/* Date selector for personal notes */}
+          {activeTab === "personal" && (
+            <div className="mb-6 flex space-x-4">
+              <input
+                type="number"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                className="bg-gray-700 px-3 py-2 rounded w-24"
+              />
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                className="bg-gray-700 px-3 py-2 rounded"
+              >
+                {MONTHS.map((month) => (
+                  <option key={month.id} value={month.id}>
+                    {month.name}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="number"
+                min={1}
+                max={30}
+                value={selectedDay}
+                onChange={(e) => setSelectedDay(parseInt(e.target.value))}
+                className="bg-gray-700 px-3 py-2 rounded w-20"
+              />
             </div>
-          ) : (
-            <p className="text-gray-300">No notes available.</p>
           )}
 
-          <div className="mt-6 p-4 bg-gray-700 rounded">
-            <h3 className="font-semibold mb-2">Adding New Notes</h3>
-            <p className="text-sm">
-              To add new notes, you can modify the historical.js or personal.js
-              files following the format described in notes.txt. In this new
-              version, you can also add notes programmatically using the
-              addHistoricalNote or addPersonalNote functions.
-            </p>
+          {/* Notes list */}
+          <div className="space-y-4">
+            {notes.map((note) => (
+              <div key={note.id} className="bg-gray-700 p-4 rounded">
+                <h3 className="font-semibold text-yellow-300 mb-2">
+                  {formatDate(note)}
+                </h3>
+                {isEditing === note.id ? (
+                  <div className="space-y-2">
+                    <textarea
+                      value={editContent}
+                      onChange={(e) => setEditContent(e.target.value)}
+                      className="w-full bg-gray-600 p-2 rounded"
+                      rows={4}
+                    />
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleUpdateNote(note.id)}
+                        className="bg-green-600 hover:bg-green-500 px-3 py-1 rounded"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setIsEditing(null)}
+                        className="bg-gray-600 hover:bg-gray-500 px-3 py-1 rounded"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div
+                      className="prose prose-invert max-w-none"
+                      dangerouslySetInnerHTML={{ __html: note.content }}
+                    />
+                    {activeTab === "personal" && (
+                      <div className="mt-2 flex space-x-2">
+                        <button
+                          onClick={() => startEditing(note)}
+                          className="text-blue-400 hover:text-blue-300 text-sm"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteNote(note.id)}
+                          className="text-red-400 hover:text-red-300 text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
+
+          {/* Add new note form for personal notes */}
+          {activeTab === "personal" && (
+            <div className="mt-6 p-4 bg-gray-700 rounded">
+              <h3 className="font-semibold mb-2">Add New Note</h3>
+              <div className="space-y-2">
+                <textarea
+                  value={newNoteContent}
+                  onChange={(e) => setNewNoteContent(e.target.value)}
+                  placeholder="Enter your note here..."
+                  className="w-full bg-gray-600 p-2 rounded"
+                  rows={4}
+                />
+                <button
+                  onClick={handleAddNote}
+                  className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded"
+                >
+                  Add Note
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Info box for historical notes */}
+          {activeTab === "historical" && (
+            <div className="mt-6 p-4 bg-gray-700 rounded">
+              <h3 className="font-semibold mb-2">Historical Notes</h3>
+              <p className="text-sm">
+                Historical notes contain important events from the history of
+                Faerûn. These notes are read-only and cannot be modified.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </Layout>

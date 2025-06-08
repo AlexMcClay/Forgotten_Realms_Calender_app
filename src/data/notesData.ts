@@ -20,17 +20,35 @@ export const HISTORICAL_NOTES: Note[] = [
   },
 ];
 
-// Personal notes from the original app
-export const PERSONAL_NOTES: Note[] = [
-  {
-    id: "pp13720101",
-    year: 1372,
-    month: 1,
-    day: 1,
-    content:
-      "For information on adding your own personal notes see the notes.txt file.",
-  },
-];
+const STORAGE_KEY = "calendar_personal_notes";
+
+// Load personal notes from localStorage or use default if not found
+function loadPersonalNotes(): Note[] {
+  if (typeof window === "undefined") return [];
+  const stored = localStorage.getItem(STORAGE_KEY);
+  return stored
+    ? JSON.parse(stored)
+    : [
+        {
+          id: "pp13720101",
+          year: 1372,
+          month: 1,
+          day: 1,
+          content:
+            "For information on adding your own personal notes see the notes.txt file.",
+        },
+      ];
+}
+
+// Initialize personal notes
+let PERSONAL_NOTES: Note[] = loadPersonalNotes();
+
+// Save personal notes to localStorage
+function savePersonalNotes(notes: Note[]): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+  PERSONAL_NOTES = notes;
+}
 
 /**
  * Gets historical notes for a specific date
@@ -115,7 +133,29 @@ export function addHistoricalNote(note: Note): void {
  * @param note The note to add
  */
 export function addPersonalNote(note: Note): void {
-  PERSONAL_NOTES.push(note);
+  const notes = [...PERSONAL_NOTES, note];
+  savePersonalNotes(notes);
+}
+
+/**
+ * Updates an existing personal note
+ * @param noteId The ID of the note to update
+ * @param content The new content for the note
+ */
+export function updatePersonalNote(noteId: string, content: string): void {
+  const notes = PERSONAL_NOTES.map((note) =>
+    note.id === noteId ? { ...note, content } : note
+  );
+  savePersonalNotes(notes);
+}
+
+/**
+ * Deletes a personal note
+ * @param noteId The ID of the note to delete
+ */
+export function deletePersonalNote(noteId: string): void {
+  const notes = PERSONAL_NOTES.filter((note) => note.id !== noteId);
+  savePersonalNotes(notes);
 }
 
 /**
