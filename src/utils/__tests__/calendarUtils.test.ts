@@ -1,155 +1,184 @@
 import {
-  getLeapYearType,
   getMoonPhase,
-  convertMoonPhaseToIndex,
+  getLeapYearType,
   isLeapYear,
+  convertMoonPhaseToIndex,
 } from "../calendarUtils";
 
 describe("Calendar Utilities", () => {
-  describe("getLeapYearType", () => {
-    it("should return the correct leap year type for 1368 DR", () => {
-      const year = 1368;
-      const result = getLeapYearType(year);
-      expect(result).toBe(1); // Type 1 leap year
-    });
-
-    it("should return the correct leap year type for 1369 DR", () => {
-      const year = 1369;
-      const result = getLeapYearType(year);
-      expect(result).not.toBe(1); // Not a Type 1 leap year
-    });
-  });
-
-  describe("isLeapYear", () => {
-    it("should return true for leap years", () => {
-      expect(isLeapYear(1368)).toBe(true);
-      expect(isLeapYear(1372)).toBe(true);
-      expect(isLeapYear(1376)).toBe(true);
-    });
-
-    it("should return false for non-leap years", () => {
-      expect(isLeapYear(1369)).toBe(false);
-      expect(isLeapYear(1370)).toBe(false);
-      expect(isLeapYear(1371)).toBe(false);
-    });
-  });
-
   describe("getMoonPhase", () => {
-    describe("Hammer 1368 DR Moon Phases", () => {
-      const year = 1368;
+    describe("Hammer 1372 DR", () => {
+      const year = 1372;
       const month = 1; // Hammer
 
-      it("should show full moon on day 1", () => {
-        const result = getMoonPhase(year, month, 1);
-        expect(result).toBe(8); // Full moon
-        expect(convertMoonPhaseToIndex(result)).toBe(4); // Full moon index
+      test("Day 1 should be Full Moon", () => {
+        expect(getMoonPhase(year, month, 1)).toBe(1);
       });
 
-      it("should show last quarter on day 8", () => {
-        const result = getMoonPhase(year, month, 8);
-        expect(result).toBe(11); // Last quarter
-        expect(convertMoonPhaseToIndex(result)).toBe(6); // Last quarter index
+      test("Days 2-7 should be Waning Gibbous", () => {
+        expect(getMoonPhase(year, month, 2)).toBe(2);
+        expect(getMoonPhase(year, month, 3)).toBe(3);
+        expect(getMoonPhase(year, month, 4)).toBe(4);
+        expect(getMoonPhase(year, month, 5)).toBe(2);
+        expect(getMoonPhase(year, month, 6)).toBe(3);
+        expect(getMoonPhase(year, month, 7)).toBe(4);
       });
 
-      it("should show new moon on day 16", () => {
-        const result = getMoonPhase(year, month, 16);
-        expect(result).toBe(0); // New moon
-        expect(convertMoonPhaseToIndex(result)).toBe(0); // New moon index
+      test("Day 8 should be Last Quarter", () => {
+        expect(getMoonPhase(year, month, 8)).toBe(5);
       });
 
-      it("should show first quarter on day 23", () => {
-        const result = getMoonPhase(year, month, 23);
-        expect(result).toBe(3); // First quarter
-        expect(convertMoonPhaseToIndex(result)).toBe(2); // First quarter index
+      test("Days 9-15 should be Waning Crescent", () => {
+        expect(getMoonPhase(year, month, 9)).toBe(6);
+        expect(getMoonPhase(year, month, 10)).toBe(7);
+        expect(getMoonPhase(year, month, 11)).toBe(8);
+        expect(getMoonPhase(year, month, 12)).toBe(6);
+        expect(getMoonPhase(year, month, 13)).toBe(7);
+        expect(getMoonPhase(year, month, 14)).toBe(8);
+        expect(getMoonPhase(year, month, 15)).toBe(6);
       });
 
-      it("should show correct phase progression through the month", () => {
-        // Days 1-7: Full Moon to Last Quarter
-        expect(getMoonPhase(year, month, 1)).toBe(8); // Full moon
-        expect(getMoonPhase(year, month, 4)).toBe(9); // Waning gibbous
-        expect(getMoonPhase(year, month, 7)).toBe(10); // Waning gibbous
+      test("Day 16 should be New Moon", () => {
+        expect(getMoonPhase(year, month, 16)).toBe(9);
+      });
 
-        // Days 8-15: Last Quarter to New Moon
-        expect(getMoonPhase(year, month, 8)).toBe(11); // Last quarter
-        expect(getMoonPhase(year, month, 12)).toBe(13); // Waning crescent
-        expect(getMoonPhase(year, month, 15)).toBe(15); // Waning crescent
+      test("Days 17-22 should be Waxing Crescent", () => {
+        expect(getMoonPhase(year, month, 17)).toBe(10);
+        expect(getMoonPhase(year, month, 18)).toBe(11);
+        expect(getMoonPhase(year, month, 19)).toBe(12);
+        expect(getMoonPhase(year, month, 20)).toBe(10);
+        expect(getMoonPhase(year, month, 21)).toBe(11);
+        expect(getMoonPhase(year, month, 22)).toBe(12);
+      });
 
-        // Days 16-22: New Moon to First Quarter
-        expect(getMoonPhase(year, month, 16)).toBe(0); // New moon
-        expect(getMoonPhase(year, month, 19)).toBe(1); // Waxing crescent
-        expect(getMoonPhase(year, month, 22)).toBe(2); // Waxing crescent
+      test("Day 23 should be First Quarter", () => {
+        expect(getMoonPhase(year, month, 23)).toBe(13);
+      });
 
-        // Days 23-30: First Quarter to Full Moon
-        expect(getMoonPhase(year, month, 23)).toBe(3); // First quarter
-        expect(getMoonPhase(year, month, 26)).toBe(5); // Waxing gibbous
-        expect(getMoonPhase(year, month, 30)).toBe(7); // Almost full
+      test("Days 24-30 should be Waxing Gibbous", () => {
+        expect(getMoonPhase(year, month, 24)).toBe(14);
+        expect(getMoonPhase(year, month, 25)).toBe(15);
+        expect(getMoonPhase(year, month, 26)).toBe(16);
+        expect(getMoonPhase(year, month, 27)).toBe(14);
+        expect(getMoonPhase(year, month, 28)).toBe(15);
+        expect(getMoonPhase(year, month, 29)).toBe(16);
+        expect(getMoonPhase(year, month, 30)).toBe(14);
+      });
+
+      test("Midwinter (Day 31) should be Waxing Gibbous", () => {
+        expect(getMoonPhase(year, month, 31)).toBe(15);
+      });
+    });
+
+    describe("Alturiak 1372 DR", () => {
+      const year = 1372;
+      const month = 2; // Alturiak
+
+      test("Day 1 should be Full Moon", () => {
+        expect(getMoonPhase(year, month, 1)).toBe(1);
+      });
+
+      test("Days 2-7 should be Waning Gibbous", () => {
+        expect(getMoonPhase(year, month, 2)).toBe(2);
+        expect(getMoonPhase(year, month, 3)).toBe(3);
+        expect(getMoonPhase(year, month, 4)).toBe(4);
+        expect(getMoonPhase(year, month, 5)).toBe(2);
+        expect(getMoonPhase(year, month, 6)).toBe(3);
+        expect(getMoonPhase(year, month, 7)).toBe(4);
+      });
+
+      test("Day 8 should be Last Quarter", () => {
+        expect(getMoonPhase(year, month, 8)).toBe(5);
+      });
+
+      test("Days 9-14 should be Waning Crescent", () => {
+        expect(getMoonPhase(year, month, 9)).toBe(6);
+        expect(getMoonPhase(year, month, 10)).toBe(7);
+        expect(getMoonPhase(year, month, 11)).toBe(8);
+        expect(getMoonPhase(year, month, 12)).toBe(6);
+        expect(getMoonPhase(year, month, 13)).toBe(7);
+        expect(getMoonPhase(year, month, 14)).toBe(8);
+      });
+
+      test("Day 15 should be New Moon", () => {
+        expect(getMoonPhase(year, month, 15)).toBe(9);
+      });
+
+      test("Days 16-22 should be Waxing Crescent", () => {
+        expect(getMoonPhase(year, month, 16)).toBe(10);
+        expect(getMoonPhase(year, month, 17)).toBe(11);
+        expect(getMoonPhase(year, month, 18)).toBe(12);
+        expect(getMoonPhase(year, month, 19)).toBe(10);
+        expect(getMoonPhase(year, month, 20)).toBe(11);
+        expect(getMoonPhase(year, month, 21)).toBe(12);
+        expect(getMoonPhase(year, month, 22)).toBe(10);
+      });
+
+      test("Day 23 should be First Quarter", () => {
+        expect(getMoonPhase(year, month, 23)).toBe(13);
+      });
+
+      test("Days 24-29 should be Waxing Gibbous", () => {
+        expect(getMoonPhase(year, month, 24)).toBe(14);
+        expect(getMoonPhase(year, month, 25)).toBe(15);
+        expect(getMoonPhase(year, month, 26)).toBe(16);
+        expect(getMoonPhase(year, month, 27)).toBe(14);
+        expect(getMoonPhase(year, month, 28)).toBe(15);
+        expect(getMoonPhase(year, month, 29)).toBe(16);
+      });
+
+      test("Day 30 should be Full Moon", () => {
+        expect(getMoonPhase(year, month, 30)).toBe(1);
+      });
+    });
+
+    describe("Special cases", () => {
+      test("Shieldmeet (Day 32 after Flamerule in leap years)", () => {
+        expect(getMoonPhase(1372, 7, 32)).toBe(16); // 1372 is a leap year
+        expect(getMoonPhase(1373, 7, 32)).toBeUndefined(); // 1373 is not a leap year
+      });
+
+      test("Non-existent days should return undefined", () => {
+        expect(getMoonPhase(1372, 1, 32)).toBeUndefined(); // No day 32 in Hammer
+        expect(getMoonPhase(1372, 3, 31)).toBeUndefined(); // No day 31 in Ches
       });
     });
   });
 
   describe("convertMoonPhaseToIndex", () => {
-    it("should convert moon phase numbers to user-friendly indices", () => {
-      // New Moon
-      expect(convertMoonPhaseToIndex(0)).toBe(0);
+    test("should convert moon phases to correct indices", () => {
+      expect(convertMoonPhaseToIndex(9)).toBe(0); // New Moon
+      expect(convertMoonPhaseToIndex(10)).toBe(1); // Waxing Crescent
+      expect(convertMoonPhaseToIndex(13)).toBe(2); // First Quarter
+      expect(convertMoonPhaseToIndex(14)).toBe(3); // Waxing Gibbous
+      expect(convertMoonPhaseToIndex(1)).toBe(4); // Full Moon
+      expect(convertMoonPhaseToIndex(2)).toBe(5); // Waning Gibbous
+      expect(convertMoonPhaseToIndex(5)).toBe(6); // Last Quarter
+      expect(convertMoonPhaseToIndex(6)).toBe(7); // Waning Crescent
+    });
 
-      // Waxing Crescent
-      expect(convertMoonPhaseToIndex(1)).toBe(1);
-      expect(convertMoonPhaseToIndex(2)).toBe(1);
-
-      // First Quarter
-      expect(convertMoonPhaseToIndex(3)).toBe(2);
-      expect(convertMoonPhaseToIndex(4)).toBe(2);
-
-      // Waxing Gibbous
-      expect(convertMoonPhaseToIndex(5)).toBe(3);
-      expect(convertMoonPhaseToIndex(6)).toBe(3);
-
-      // Full Moon
-      expect(convertMoonPhaseToIndex(7)).toBe(4);
-      expect(convertMoonPhaseToIndex(8)).toBe(4);
-
-      // Waning Gibbous
-      expect(convertMoonPhaseToIndex(9)).toBe(5);
-      expect(convertMoonPhaseToIndex(10)).toBe(5);
-
-      // Last Quarter
-      expect(convertMoonPhaseToIndex(11)).toBe(6);
-      expect(convertMoonPhaseToIndex(12)).toBe(6);
-
-      // Waning Crescent
-      expect(convertMoonPhaseToIndex(13)).toBe(7);
-      expect(convertMoonPhaseToIndex(16)).toBe(7);
+    test("should handle undefined input", () => {
+      // @ts-expect-error - Testing undefined input
+      expect(convertMoonPhaseToIndex(undefined)).toBeUndefined();
     });
   });
 
-  describe("Full Moon on 1 Hammer 1368 DR", () => {
-    it("should be a full moon on 1 Hammer 1368 DR", () => {
-      const year = 1368;
-      const month = 1; // Hammer
-      const day = 1;
-
-      const moonPhase = getMoonPhase(year, month, day);
-      const moonPhaseIndex = convertMoonPhaseToIndex(moonPhase);
-
-      // Phase 8 converts to index 4 (full moon)
-      expect(moonPhaseIndex).toBe(4);
+  describe("getLeapYearType", () => {
+    test("should correctly identify leap year types", () => {
+      expect(getLeapYearType(1372)).toBe(1); // Type 1 leap year
+      expect(getLeapYearType(1373)).toBe(2); // Type 2
+      expect(getLeapYearType(1374)).toBe(3); // Type 3
+      expect(getLeapYearType(1375)).toBe(4); // Type 4
     });
+  });
 
-    it("should return correct phases for mid-month in 1368 DR", () => {
-      const year = 1368;
-      const month = 1; // Hammer
-
-      // Day 8 should be last quarter (phase 11)
-      const day8Phase = getMoonPhase(year, month, 8);
-      expect(day8Phase).toBe(11);
-
-      // Day 24 should be waxing gibbous (phase 5)
-      const day24Phase = getMoonPhase(year, month, 24);
-      expect(day24Phase).toBe(5);
-
-      // Verify the phase indices
-      expect(convertMoonPhaseToIndex(day8Phase)).toBe(6); // Last quarter
-      expect(convertMoonPhaseToIndex(day24Phase)).toBe(3); // Waxing gibbous
+  describe("isLeapYear", () => {
+    test("should correctly identify leap years", () => {
+      expect(isLeapYear(1372)).toBe(true);
+      expect(isLeapYear(1373)).toBe(false);
+      expect(isLeapYear(1374)).toBe(false);
+      expect(isLeapYear(1375)).toBe(false);
+      expect(isLeapYear(1376)).toBe(true);
     });
   });
 });

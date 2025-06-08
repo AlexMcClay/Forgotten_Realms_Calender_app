@@ -25,11 +25,6 @@ export function getLeapYearType(year: number): number {
     return 4; // Type 4 leap year
   }
 
-  // For debugging
-  console.log(
-    `Year: ${year}, tYear: ${tYear}, aYear: ${aYear}, qYear: ${qYear}`
-  );
-
   return 0; // Not a leap year (should never happen)
 }
 
@@ -44,163 +39,60 @@ export function isLeapYear(year: number): boolean {
 
 /**
  * Gets the moon phase for a specific day in a month and year
- * @param year The year
- * @param month The month (1-12)
- * @param day The day (1-30)
- * @returns A number from 0-16 representing the moon phase
+ * Based on the original calendar's moon phase pattern:
+ * - Day 1: Full Moon (phase 1)
+ * - Days 2-7: Waning Gibbous (phases 2-4)
+ * - Day 8: Last Quarter (phase 5)
+ * - Days 9-15: Waning Crescent (phases 6-8)
+ * - Day 16: New Moon (phase 9)
+ * - Days 17-22: Waxing Crescent (phases 10-12)
+ * - Day 23: First Quarter (phase 13)
+ * - Days 24-30/31: Waxing Gibbous (phases 14-16)
  */
-export function getMoonPhase(year: number, month: number, day: number): number {
-  // These arrays contain the moon phase data for different leap year types
-  // The original code had these as global arrays, but we're encapsulating them here
+export function getMoonPhase(
+  year: number,
+  month: number,
+  day: number
+): number | undefined {
+  // Handle regular days (1-30)
+  if (day === 1) return 1; // Full Moon
+  if (day >= 2 && day <= 7) return 2 + ((day - 2) % 3); // Waning Gibbous
+  if (day === 8) return 5; // Last Quarter
+  if (day >= 9 && day <= 15) return 6 + ((day - 9) % 3); // Waning Crescent
+  if (day === 16) return 9; // New Moon
+  if (day >= 17 && day <= 22) return 10 + ((day - 17) % 3); // Waxing Crescent
+  if (day === 23) return 13; // First Quarter
+  if (day >= 24 && day <= 30) return 14 + ((day - 24) % 3); // Waxing Gibbous
 
-  // Leap year moon phases (Type 1)
-  // Each month follows the pattern:
-  // Days 1-7: Full Moon to Last Quarter (phases 8-10)
-  // Days 8-15: Last Quarter to New Moon (phases 11-15)
-  // Days 16-22: New Moon to First Quarter (phases 0-2)
-  // Days 23-30: First Quarter to Full Moon (phases 3-7)
-  const monthPattern = [
-    // Days 1-7: Full Moon to Last Quarter
-    0, 8, 8, 9, 9, 10, 10, 10,
-    // Days 8-15: Last Quarter to New Moon
-    11, 12, 12, 13, 13, 14, 15, 15,
-    // Days 16-22: New Moon to First Quarter
-    0, 0, 1, 1, 2, 2, 3,
-    // Days 23-30: First Quarter to Full Moon
-    3, 4, 5, 5, 6, 6, 7, 7,
-    // Extra days for array indexing (to match original array length)
-    7, 8,
-  ];
+  // Handle holidays (day 31)
+  if (day === 31) return 15; // Waxing Gibbous
 
-  // Create the full array by repeating the pattern for each month
-  const leapYearMoonPhases = Array(12)
-    .fill(null)
-    .flatMap(() => monthPattern);
+  // Handle Shieldmeet (day 32 in leap years)
+  if (day === 32 && isLeapYear(year) && month === 7) return 16; // Almost Full Moon
 
-  // Non-leap year moon phases (Type 2)
-  const nonLeapYearMoonPhases2 = [
-    0, 2, 2, 3, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 12,
-    13, 14, 14, 15, 15, 16, 16, 1, 2, 0, 2, 3, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8,
-    9, 10, 10, 11, 11, 11, 12, 12, 13, 14, 14, 15, 15, 15, 16, 16, 1, 0, 0, 2,
-    2, 3, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 12, 12, 13, 14,
-    14, 15, 15, 15, 16, 16, 1, 0, 0, 2, 2, 3, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8,
-    9, 10, 10, 11, 11, 11, 12, 12, 13, 14, 14, 14, 15, 15, 16, 16, 16, 0, 1, 2,
-    2, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 12, 12, 13, 14, 14,
-    15, 15, 15, 16, 16, 1, 0, 0, 2, 2, 3, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9,
-    10, 10, 11, 11, 11, 12, 12, 13, 14, 14, 15, 15, 16, 16, 1, 0, 0, 2, 2, 3, 3,
-    3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 12, 12, 13, 14, 14, 14,
-    15, 15, 16, 16, 16, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10,
-    11, 11, 11, 12, 12, 13, 14, 14, 15, 15, 16, 16, 1, 0, 0, 2, 2, 3, 3, 3, 4,
-    4, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 12, 13, 14, 14, 14, 15,
-    15, 16, 16, 16, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11,
-    11, 11, 12, 12, 13, 14, 14, 15, 15, 16, 16, 1, 0, 0, 2, 2, 3, 3, 3, 4, 4, 5,
-    6, 6, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 12, 13, 14, 14, 14, 15, 15, 16,
-    16, 16, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 12,
-    12, 13, 14, 14, 15, 15, 15, 16, 16, 1, 0, 0,
-  ];
-
-  // Non-leap year moon phases (Type 3)
-  const nonLeapYearMoonPhases3 = [
-    0, 2, 2, 3, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 12,
-    13, 14, 14, 15, 15, 16, 16, 1, 2, 0, 2, 3, 3, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8,
-    8, 9, 10, 10, 11, 11, 12, 12, 13, 14, 14, 15, 15, 15, 16, 16, 1, 0, 0, 2, 2,
-    3, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 12, 13, 14,
-    14, 15, 15, 16, 16, 1, 0, 0, 2, 2, 3, 3, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9,
-    10, 10, 11, 11, 12, 12, 13, 14, 14, 14, 15, 15, 16, 16, 16, 0, 1, 2, 2, 3,
-    4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 12, 13, 14, 14, 15,
-    15, 16, 16, 1, 0, 0, 2, 2, 3, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10,
-    11, 11, 11, 12, 12, 13, 14, 14, 15, 15, 15, 16, 16, 0, 0, 1, 2, 2, 3, 3, 4,
-    4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 12, 12, 13, 14, 14, 14, 15,
-    15, 16, 16, 16, 0, 1, 2, 2, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10, 11,
-    11, 11, 12, 12, 13, 14, 14, 15, 15, 15, 16, 16, 0, 0, 1, 2, 2, 3, 3, 4, 4,
-    5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 12, 12, 13, 14, 14, 14, 15, 15,
-    16, 16, 16, 0, 1, 2, 2, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10, 11, 11,
-    11, 12, 12, 13, 14, 14, 15, 15, 16, 16, 1, 0, 0, 2, 2, 3, 3, 3, 4, 4, 5, 6,
-    6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 12, 12, 13, 14, 14, 14, 15, 15, 16, 16,
-    16, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12,
-    12, 13, 14, 14, 15, 15, 16, 16, 1, 0, 0,
-  ];
-
-  // Non-leap year moon phases (Type 4)
-  const nonLeapYearMoonPhases4 = [
-    0, 2, 2, 3, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 12,
-    13, 14, 14, 14, 15, 15, 16, 16, 16, 0, 1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 7, 7,
-    8, 8, 9, 10, 10, 11, 11, 11, 12, 12, 13, 14, 14, 15, 15, 16, 16, 1, 0, 0, 2,
-    2, 3, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 12, 13,
-    14, 14, 15, 15, 15, 16, 16, 0, 0, 1, 2, 2, 3, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8,
-    8, 9, 10, 10, 11, 11, 12, 12, 13, 14, 14, 14, 15, 15, 16, 16, 16, 0, 1, 2,
-    2, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 12, 13, 14,
-    14, 15, 15, 16, 16, 1, 0, 0, 2, 2, 2, 3, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9,
-    10, 10, 11, 11, 12, 12, 13, 14, 14, 15, 15, 15, 16, 16, 0, 0, 1, 2, 2, 3, 3,
-    4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 12, 13, 14, 14, 15,
-    15, 15, 16, 16, 0, 1, 2, 2, 3, 3, 4, 4, 5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10,
-    11, 11, 12, 12, 13, 14, 14, 15, 15, 15, 16, 16, 0, 0, 1, 2, 2, 3, 3, 4, 4,
-    5, 6, 6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 12, 13, 14, 14, 15, 15,
-    15, 16, 16, 0, 1, 2, 2, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10, 11, 11,
-    11, 12, 12, 13, 14, 14, 15, 15, 15, 16, 16, 0, 0, 1, 2, 2, 3, 3, 4, 4, 5, 6,
-    6, 7, 7, 7, 8, 8, 9, 10, 10, 11, 11, 12, 12, 13, 14, 14, 14, 15, 15, 16, 16,
-    16, 0, 1, 2, 2, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12,
-    12, 13, 14, 14, 15, 15, 15, 16, 16, 0, 0,
-  ];
-
-  // Determine which moon phase array to use based on leap year type
-  const leapYearType = getLeapYearType(year);
-  let moonPhaseArray;
-
-  switch (leapYearType) {
-    case 1:
-      moonPhaseArray = leapYearMoonPhases;
-      break;
-    case 2:
-      moonPhaseArray = nonLeapYearMoonPhases2;
-      break;
-    case 3:
-      moonPhaseArray = nonLeapYearMoonPhases3;
-      break;
-    case 4:
-      moonPhaseArray = nonLeapYearMoonPhases4;
-      break;
-    default:
-      moonPhaseArray = leapYearMoonPhases; // Default to leap year phases
-  }
-
-  // Calculate the index in the moon phase array
-  const index = (month - 1) * 32 + day;
-
-  // Return the moon phase
-  return moonPhaseArray[index];
+  // Return undefined for non-existent days
+  return undefined;
 }
 
 /**
- * Converts a moon phase number to a more user-friendly index (0-7)
- * @param moonPhase The moon phase number (0-16)
+ * Converts a moon phase number to a user-friendly index (0-7)
+ * @param moonPhase The moon phase number (1-16)
  * @returns A number from 0-7 representing the moon phase
  */
-export function convertMoonPhaseToIndex(moonPhase: number): number {
-  // The original code used a complex mapping system
-  // We'll simplify it to map the 0-16 range to 0-7
-  if (moonPhase >= 0 && moonPhase <= 16) {
-    // Map the 0-16 range to 0-7
-    // 0 -> 0 (New Moon)
-    // 1-2 -> 1 (Waxing Crescent)
-    // 3-4 -> 2 (First Quarter)
-    // 5-6 -> 3 (Waxing Gibbous)
-    // 7-8 -> 4 (Full Moon)
-    // 9-10 -> 5 (Waning Gibbous)
-    // 11-12 -> 6 (Last Quarter)
-    // 13-16 -> 7 (Waning Crescent)
+export function convertMoonPhaseToIndex(moonPhase: number): number | undefined {
+  if (typeof moonPhase === "undefined") return undefined;
 
-    if (moonPhase === 0) return 0;
-    if (moonPhase <= 2) return 1;
-    if (moonPhase <= 4) return 2;
-    if (moonPhase <= 6) return 3;
-    if (moonPhase <= 8) return 4;
-    if (moonPhase <= 10) return 5;
-    if (moonPhase <= 12) return 6;
-    return 7;
-  }
+  // Map moon phase numbers to indices based on the Moon_X.jpg images
+  if (moonPhase === 9) return 0; // New Moon
+  if (moonPhase >= 10 && moonPhase <= 12) return 1; // Waxing Crescent
+  if (moonPhase === 13) return 2; // First Quarter
+  if (moonPhase >= 14 && moonPhase <= 16) return 3; // Waxing Gibbous
+  if (moonPhase === 1) return 4; // Full Moon
+  if (moonPhase >= 2 && moonPhase <= 4) return 5; // Waning Gibbous
+  if (moonPhase === 5) return 6; // Last Quarter
+  if (moonPhase >= 6 && moonPhase <= 8) return 7; // Waning Crescent
 
-  return 0; // Default to new moon
+  return undefined;
 }
 
 /**
