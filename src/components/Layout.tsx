@@ -5,7 +5,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen text-gray-100">
       <header className="bg-gray-900 p-4 shadow-md border-b border-gray-800">

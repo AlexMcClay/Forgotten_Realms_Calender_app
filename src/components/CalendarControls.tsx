@@ -9,12 +9,12 @@ interface CalendarControlsProps {
   onMonthChange: (month: number) => void;
 }
 
-const CalendarControls: React.FC<CalendarControlsProps> = ({
+const CalendarControls = ({
   year,
   month,
   onYearChange,
   onMonthChange,
-}) => {
+}: CalendarControlsProps) => {
   const handlePreviousYear = () => {
     onYearChange(year - 1);
   };

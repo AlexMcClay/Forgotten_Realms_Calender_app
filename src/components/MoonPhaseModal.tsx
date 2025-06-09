@@ -5,7 +5,7 @@ interface MoonPhaseModalProps {
   onClose: () => void;
 }
 
-const MoonPhaseModal: React.FC<MoonPhaseModalProps> = ({ isOpen, onClose }) => {
+const MoonPhaseModal = ({ isOpen, onClose }: MoonPhaseModalProps) => {
   if (!isOpen) return null;
 
   return (

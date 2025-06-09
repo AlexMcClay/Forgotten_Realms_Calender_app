@@ -7,7 +7,7 @@ import CalendarGrid from "../components/CalendarGrid";
 import DayDetail from "../components/DayDetail";
 import { DEFAULT_YEAR, DEFAULT_MONTH } from "../data/calendarData";
 
-const HomePage: React.FC = () => {
+const HomePage = () => {
   // State for the current year, month, and selected day
   const [year, setYear] = useState<number>(DEFAULT_YEAR);
   const [month, setMonth] = useState<number>(DEFAULT_MONTH);

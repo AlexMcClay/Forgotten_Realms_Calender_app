@@ -8,7 +8,7 @@ export const HISTORICAL_NOTES: Note[] = [
     month: 1,
     day: 1,
     content:
-      "For information on adding your own historic notes see the notes.txt file.",
+      "For information on adding your own historic notes, select a date in the calendar page and click the 'Add Note' button. Note are stored in your browser's local storage.",
   },
   {
     id: "hp137213X",
@@ -26,18 +26,7 @@ const STORAGE_KEY = "calendar_personal_notes";
 function loadPersonalNotes(): Note[] {
   if (typeof window === "undefined") return [];
   const stored = localStorage.getItem(STORAGE_KEY);
-  return stored
-    ? JSON.parse(stored)
-    : [
-        {
-          id: "pp13720101",
-          year: 1372,
-          month: 1,
-          day: 1,
-          content:
-            "For information on adding your own personal notes see the notes.txt file.",
-        },
-      ];
+  return stored ? JSON.parse(stored) : [HISTORICAL_NOTES[0]];
 }
 
 // Initialize personal notes

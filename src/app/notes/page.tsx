@@ -14,7 +14,7 @@ import { Note } from "../../types/calendar";
 import { MONTHS } from "../../data/calendarData";
 import { formatYear } from "../../data/yearData";
 
-const NotesPage: React.FC = () => {
+const NotesPage = () => {
   const [activeTab, setActiveTab] = useState<"historical" | "personal">(
     "historical"
   );

@@ -18,7 +18,7 @@ interface DayDetailProps {
   onClose: () => void;
 }
 
-const DayDetail: React.FC<DayDetailProps> = ({ year, month, day, onClose }) => {
+const DayDetail = ({ year, month, day, onClose }: DayDetailProps) => {
   const [notes, setNotes] = useState<Note[]>(getAllNotes(year, month, day));
   const [newNoteContent, setNewNoteContent] = useState("");
   const [isEditing, setIsEditing] = useState<string | null>(null);
