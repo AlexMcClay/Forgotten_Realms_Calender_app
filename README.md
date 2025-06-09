@@ -13,7 +13,6 @@ A modern Next.js implementation of the classic Wizards of the Coast Forgotten Re
 ## Documentation
 
 - [Moon Phases Guide](./docs/MOON_PHASES.md) - Detailed explanation of moon phases with images
-- [Original WotC Calendar](https://github.com/your-username/new_calendar_app/blob/main/original/index.htm) - Reference to the original 2005 calendar tool
 
 ## Technical Details
 
@@ -62,7 +61,7 @@ npm test
 ## Credits
 
 Original 2005 Calendar Tool © Wizards of the Coast, Inc., a subsidiary of Hasbro, Inc.
-Modern implementation by [Your Name]
+Modern implementation by Alex McClay
 
 ## License
 
