@@ -5,10 +5,41 @@ export interface MoonPhaseDisplayProps {
   useHighRes?: boolean;
 }
 
-const MoonPhaseDisplay: React.FC<MoonPhaseDisplayProps> = ({
+function getPhaseString(phase: number): string {
+  switch (phase) {
+    case 1:
+      return "Full Moon";
+    case 2:
+    case 3:
+    case 4: // Waning Gibbous
+      return "Waning Gibbous";
+    case 5: // Last Quarter
+      return "Last Quarter";
+    case 6:
+    case 7:
+    case 8: // Waning Crescent
+      return "Waning Crescent";
+    case 9: // New Moon
+      return "New Moon";
+    case 10:
+    case 11:
+    case 12: // Waxing Crescent
+      return "Waxing Crescent";
+    case 13: // First Quarter
+      return "First Quarter";
+    case 14:
+    case 15:
+    case 16: // Waxing Gibbous
+      return "Waxing Gibbous";
+    default:
+      return "Unknown Phase";
+  }
+}
+
+const MoonPhaseDisplay = ({
   phase,
   useHighRes = false,
-}) => {
+}: MoonPhaseDisplayProps) => {
   if (typeof phase === "undefined") {
     return <div className="w-full h-full bg-gray-800 rounded-full" />;
   }
@@ -49,7 +80,10 @@ const MoonPhaseDisplay: React.FC<MoonPhaseDisplayProps> = ({
     : `/images/moons/Moon_${phase}.jpg`;
 
   return (
-    <div className="relative w-full h-full">
+    <div
+      className="relative w-full h-full"
+      title={`Moon Phase: ${getPhaseString(phase)}`}
+    >
       <img
         src={imagePath}
         alt={`Moon phase ${phase}`}

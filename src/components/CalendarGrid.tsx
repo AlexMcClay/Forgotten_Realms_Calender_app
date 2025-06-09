@@ -10,11 +10,13 @@ interface CalendarGridProps {
   onSelectDay: (day: number) => void;
 }
 
-const CalendarGrid: React.FC<CalendarGridProps> = ({
-  year,
-  month,
-  onSelectDay,
-}) => {
+function isLeapYear(year: number): boolean {
+  // A year is a leap year if it is divisible by 4,
+  // except for end-of-century years, which must be divisible by 400.
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+const CalendarGrid = ({ year, month, onSelectDay }: CalendarGridProps) => {
   // We can use isLeapYear(year) if we need to handle leap years
 
   // Get the current month data
@@ -33,9 +35,9 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   // Function to check if a day has notes
-  const hasNotes = (day: number) => {
+  const notesLength = (day: number) => {
     const notes = getAllNotes(year, month, day);
-    return notes.length > 0;
+    return notes.length;
   };
 
   // Function to get the moon phase number for a specific day
@@ -54,15 +56,32 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
 
       {/* Display holiday information if present */}
       {hasHoliday && (
-        <div className="bg-amber-900 p-2 rounded mb-4 text-center border border-amber-700">
+        <div className="bg-amber-900 p-2 rounded mb-4 text-center border border-amber-700 flex items-center justify-center gap-2">
           <p className="font-semibold">{currentMonth.primaryHoliday}</p>
+          <div className=" h-[40px] w-[40px]">
+            <MoonPhaseDisplay
+              phase={getMoonPhaseForDay(31)}
+              useHighRes={true}
+            />
+          </div>
         </div>
       )}
 
       {/* Secondary holiday or seasonal event */}
       {currentMonth.secondaryHoliday && (
-        <div className="bg-indigo-900 p-2 rounded mb-4 text-center border border-indigo-700">
+        <div className="bg-indigo-900 p-2 rounded mb-4 text-center border border-indigo-700 flex items-center justify-center gap-2">
           <p>{currentMonth.secondaryHoliday}</p>
+        </div>
+      )}
+      {isLeapYear(year) && month === 7 && (
+        <div className="bg-green-900 p-2 rounded mb-4 text-center border border-green-700 flex items-center justify-center gap-2">
+          <p className="font-semibold">Shieldmeet</p>
+          <div className=" h-[40px] w-[40px]">
+            <MoonPhaseDisplay
+              phase={getMoonPhaseForDay(32)}
+              useHighRes={true}
+            />
+          </div>
         </div>
       )}
 
@@ -92,18 +111,26 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
         {/* Calendar days */}
         {days.map((day) => {
           const moonPhase = getMoonPhaseForDay(day);
-          const dayHasNotes = hasNotes(day);
+          const totalNotes = notesLength(day);
 
           return (
             <div
               key={`day-${day}`}
               className={`
                 bg-gray-700 p-2 rounded min-h-[80px] flex flex-col
-                ${dayHasNotes ? "ring-2 ring-indigo-400" : ""}
-                hover:bg-gray-600 cursor-pointer
+                hover:bg-gray-600 cursor-pointer relative
               `}
               onClick={() => onSelectDay(day)}
             >
+              {/* Notes count badge */}
+              {totalNotes > 0 && (
+                <div
+                  title={`${totalNotes} note${totalNotes > 1 ? "s" : ""}`}
+                  className="absolute top-1 left-1 bg-red-600 text-white text-xs font-semibold px-1 rounded-full w-4 h-4 text-center"
+                >
+                  {totalNotes}
+                </div>
+              )}
               <div className="text-right font-semibold">{day}</div>
 
               {/* Moon phase indicator */}
